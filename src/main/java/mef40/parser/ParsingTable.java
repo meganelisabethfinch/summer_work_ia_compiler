@@ -1,5 +1,6 @@
 package mef40.parser;
 
+import com.google.common.collect.ImmutableSet;
 import mef40.NonTerminal;
 import mef40.Symbol;
 import mef40.Terminal;
@@ -9,9 +10,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ParsingTable {
-    private final Set<Item> initialState;
-    private final Map<Set<Item>, Map<Terminal, Action>> ACTION;
-    private final Map<Set<Item>, Map<NonTerminal, Set<Item>>> GOTO;
+    public final ImmutableSet<Item> initialState;
+    private final Map<ImmutableSet<Item>, Map<Terminal, Action>> ACTION;
+    private final Map<ImmutableSet<Item>, Map<NonTerminal, ImmutableSet<Item>>> GOTO;
 
     public ParsingTable(List<Production> augmentedGrammar) {
         var canonicalCollection = generateItems(augmentedGrammar);
@@ -31,9 +32,9 @@ public class ParsingTable {
         Item acceptance = new Item(augmentedGrammar.get(0), 1);
 
         // First fill out GOTO for all NonTerminals for each state
-        for (Set<Item> state : canonicalCollection) {
+        for (ImmutableSet<Item> state : canonicalCollection) {
             // Initialise transitions for current state
-            var transitions = new HashMap<NonTerminal, Set<Item>>();
+            var transitions = new HashMap<NonTerminal, ImmutableSet<Item>>();
             GOTO.put(state, transitions);
 
             for (NonTerminal nonTerminal : nonTerminals) {
@@ -41,7 +42,7 @@ public class ParsingTable {
             }
         }
 
-        for (Set<Item> state : canonicalCollection) {
+        for (ImmutableSet<Item> state : canonicalCollection) {
             // Initialise actions for current state
             var actions = new HashMap<Terminal, Action>();
             ACTION.put(state, actions);
@@ -84,7 +85,7 @@ public class ParsingTable {
 
                 if (sym.getClass().equals(Terminal.class)) {
                     Terminal a = (Terminal)sym;
-                    Set<Item> nextState = generateGoto(state, a, augmentedGrammar);
+                    var nextState = generateGoto(state, a, augmentedGrammar);
                     Shift shift = new Shift(nextState);
 
                     if (actions.containsKey(a) && !actions.get(a).equals(shift)) {
@@ -130,7 +131,7 @@ public class ParsingTable {
      *
      * @return the closure of I
      */
-    public static Set<Item> generateClosure(Set<Item> I, List<Production> augmentedGrammar) {
+    public static ImmutableSet<Item> generateClosure(Set<Item> I, List<Production> augmentedGrammar) {
         HashSet<Item> current;
         HashSet<Item> next = new HashSet<>(I);
 
@@ -150,7 +151,7 @@ public class ParsingTable {
             }
         } while (next.size() != current.size()); // until no more items are added to 'current' on one round
 
-        return current;
+        return ImmutableSet.copyOf(current);
     }
 
     /**
@@ -163,7 +164,7 @@ public class ParsingTable {
      *
      * @return the closure of I
      */
-    public static Set<Item> generateGoto(Set<Item> I, Symbol X, List<Production> augmentedGrammar) {
+    public static ImmutableSet<Item> generateGoto(Set<Item> I, Symbol X, List<Production> augmentedGrammar) {
         // Filter I for items for which X is immediately to the right of the dot
         // Then move the dot to after X
         var subset = I
@@ -174,8 +175,7 @@ public class ParsingTable {
                 .collect(Collectors.toSet());
 
         // Then take closure of new set
-        var closure = generateClosure(subset, augmentedGrammar);
-        return closure;
+        return generateClosure(subset, augmentedGrammar);
     }
 
     /**
@@ -185,14 +185,14 @@ public class ParsingTable {
      *
      * @return the canonical collection of sets of LR(0) items
      */
-    public static Set<Set<Item>> generateItems(List<Production> augmentedGrammar) {
+    public static Set<ImmutableSet<Item>> generateItems(List<Production> augmentedGrammar) {
         Set<Symbol> symbols = augmentedGrammar.stream()
                 .flatMap(prod -> Stream.concat(Stream.of(prod.head), prod.getBody().stream()))
                 .collect(Collectors.toSet()); // or NonTerminal + Terminal.values()
         var initialItem = new Item(augmentedGrammar.get(0), 0);
         var closure = generateClosure(Set.of(initialItem), augmentedGrammar);
-        HashSet<Set<Item>> current;
-        HashSet<Set<Item>> next = new HashSet<>(Set.of(closure));
+        HashSet<ImmutableSet<Item>> current;
+        HashSet<ImmutableSet<Item>> next = new HashSet<>(Set.of(closure));
 
         do {
             current = new HashSet<>(next);
@@ -239,8 +239,8 @@ public class ParsingTable {
             // As we only ever add terminals to firsts,
             // we can compare the size before and after each iteration to know when to terminate
             long sizeCurr = firsts.entrySet().stream()
-                    .flatMap(entry -> entry.getValue().stream())
-                    .count();
+                    .mapToLong(entry -> entry.getValue().size())
+                    .sum();
 
             for (Production prod : augmentedGrammar) {
                 var prev = firsts.getOrDefault(prod.head, new HashSet<>());
@@ -249,8 +249,8 @@ public class ParsingTable {
             }
 
             long sizeNext = firsts.entrySet().stream()
-                    .flatMap(entry -> entry.getValue().stream())
-                    .count();
+                    .mapToLong(entry -> entry.getValue().size())
+                    .sum();
 
             updated = sizeCurr != sizeNext;
         } while (updated);
@@ -278,8 +278,8 @@ public class ParsingTable {
 
         do {
             long sizeCurr = follows.entrySet().stream()
-                    .flatMap(entry -> entry.getValue().stream())
-                    .count();
+                    .mapToLong(entry -> entry.getValue().size())
+                    .sum();
 
             for (Production prod : augmentedGrammar) {
                 List<Symbol> body = prod.getBody();
@@ -312,8 +312,8 @@ public class ParsingTable {
             }
 
             long sizeNext = follows.entrySet().stream()
-                    .flatMap(entry -> entry.getValue().stream())
-                    .count();
+                    .mapToLong(entry -> entry.getValue().size())
+                    .sum();
 
             updated = sizeCurr != sizeNext;
         } while (updated);

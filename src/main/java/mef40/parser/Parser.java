@@ -37,10 +37,12 @@ public class Parser {
         Queue<Token> w$ = new LinkedList<>(tokens);
         w$.add(new Token(Terminal.$));
 
-        List<Production> out = new ArrayList();
         Stack<Set<Item>> states = new Stack<>();
+        states.add(table.initialState);
 
-        var a = w$.poll();
+        List<Production> out = new ArrayList();
+
+        var a = w$.peek().tag;
         while (true) {
             var s = states.peek(); // INIT STACK WITH SOMETHING?
 

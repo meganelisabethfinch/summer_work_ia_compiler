@@ -144,7 +144,7 @@ public class ParsingTableTest {
             assertThat(reduce.production).isEqualTo(simpleGrammar.get(2));
         }
 
-        Action action = actual.GOTO(I0, Terminal.UFLOAT);
+        Action action = actual.ACTION(I0, Terminal.UFLOAT);
         assertThat(action.getClass()).isEqualTo(Shift.class);
         Shift shift = (Shift)action;
         assertThat(shift.state).containsExactlyElementsIn(I5);

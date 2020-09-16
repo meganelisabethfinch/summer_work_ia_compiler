@@ -1,5 +1,6 @@
 package mef40.parser;
 
+import com.google.common.collect.ImmutableSet;
 import mef40.Token;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -8,13 +9,13 @@ import java.util.Set;
 import java.util.Stack;
 
 public class Shift implements Action {
-    public final Set<Item> state; // Maybe switch to ImmutableSet to be safe?
+    public final ImmutableSet<Item> state; // Maybe switch to ImmutableSet to be safe?
 
-    Shift(Set<Item> state) { this.state = state; }
+    Shift(ImmutableSet<Item> state) { this.state = state; }
 
     @Override
-    public void execute(Stack<Set<Item>> stack, Queue<Token> tokens) {
-        stack.push(state);
+    public void execute(Stack<ImmutableSet<Item>> states, Queue<Token> tokens) {
+        states.push(state);
         tokens.poll();
     }
 
