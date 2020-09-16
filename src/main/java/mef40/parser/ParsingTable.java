@@ -31,17 +31,6 @@ public class ParsingTable {
                 .collect(Collectors.toSet());
         Item acceptance = new Item(augmentedGrammar.get(0), 1);
 
-        // First fill out GOTO for all NonTerminals for each state
-        for (ImmutableSet<Item> state : canonicalCollection) {
-            // Initialise transitions for current state
-            var transitions = new HashMap<NonTerminal, ImmutableSet<Item>>();
-            GOTO.put(state, transitions);
-
-            for (NonTerminal nonTerminal : nonTerminals) {
-                transitions.put(nonTerminal, generateGoto(state, nonTerminal, augmentedGrammar));
-            }
-        }
-
         for (ImmutableSet<Item> state : canonicalCollection) {
             // Initialise actions for current state
             var actions = new HashMap<Terminal, Action>();
@@ -95,6 +84,16 @@ public class ParsingTable {
 
                     actions.put(a, shift);
                 }
+            }
+
+            // Then fill out GOTO for all NonTerminals for the current state
+
+            // Initialise transitions for current state
+            var transitions = new HashMap<NonTerminal, ImmutableSet<Item>>();
+            GOTO.put(state, transitions);
+
+            for (NonTerminal nonTerminal : nonTerminals) {
+                transitions.put(nonTerminal, generateGoto(state, nonTerminal, augmentedGrammar));
             }
         }
 

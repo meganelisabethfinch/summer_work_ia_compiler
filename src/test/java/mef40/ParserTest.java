@@ -49,32 +49,42 @@ public class ParserTest {
     }
 
     @Test
-    public void parser_acceptsNestedFactorial() {
+    public void parser_parsesNestedFactorial() {
         // ARRANGE
+        var tokens = new LinkedList<>(List.of(
+                new UFloat(4),
+                new Token(Terminal.FACTORIAL),
+                new Token(Terminal.FACTORIAL)
+        ));
+
+        var expected = List.of(
+                Parser.grammar.get(14), // FLOAT -> UFLOAT
+                Parser.grammar.get(12), // STATEMENT -> FLOAT
+                Parser.grammar.get(10), // OPTFACT -> STATEMENT
+                Parser.grammar.get(9), // OPTFACT -> OPTFACT !
+                Parser.grammar.get(9), // OPTFACT -> OPTFACT !
+                Parser.grammar.get(8), // OPTCOS -> OPTFACT
+                Parser.grammar.get(6), // PRODUCT -> OPTCOS
+                Parser.grammar.get(4), // DIFFERENCE -> PRODUCT
+                Parser.grammar.get(2) // EXPRESSION -> DIFFERENCE
+        );
 
         // ACT
+        var actual = Parser.parse(tokens);
 
         // ASSERT
-        assertThat(true).isFalse();
+        assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    public void parser_acceptsNestedCos() {
-        // ARRANGE
-
-        // ACT
-
-        // ASSERT
-        assertThat(true).isFalse();
-    }
-
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void parser_rejectsInvalidExpression() {
         // ARRANGE
+        var tokens = new LinkedList<>(List.of(
+                new Token(Terminal.FACTORIAL),
+                new Token(Terminal.MULT)
+        ));
 
         // ACT
-
-        // ASSERT
-        assertThat(true).isFalse();
+        Parser.parse(tokens);
     }
 }

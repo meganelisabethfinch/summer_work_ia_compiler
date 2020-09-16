@@ -53,7 +53,7 @@ public class Parser {
             var action = table.ACTION(s, a);
 
             if (action == null) {
-                // Error
+                throw new IllegalArgumentException("Not able to parse the input string.");
             } else if (action.getClass().equals(Shift.class)) {
                 var state = ((Shift) action).state;
 
