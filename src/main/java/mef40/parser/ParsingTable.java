@@ -60,7 +60,7 @@ public class ParsingTable {
 
             for (Item item : reductions) {
                 Production prod = item.production;
-                var reduce = new Reduce(prod, GOTO);
+                var reduce = new Reduce(prod);
                 var follow = follows.get(prod.head);
 
                 for (Terminal a : follow) {
@@ -98,29 +98,34 @@ public class ParsingTable {
             }
         }
 
-        // Any other entries are "error", which we can represent with no entry?
+        // Any other entries are "error", which we can represent with no entry
     }
 
-    public Action ACTION(Set<Item> state, Terminal input) {
-        if (ACTION.containsKey(state)) {
-            var actionsOnState = ACTION.get(state);
-            if (actionsOnState != null && actionsOnState.containsKey(input)) {
-                return actionsOnState.get(input);
-            }
-            throw new NoSuchElementException("Action for that input symbol not found.");
-        }
-        throw new NoSuchElementException("Actions for that state not found.");
+    /**
+     * Lookup ACTION[s, a]
+     *
+     * @param s - the state on which the action is performed
+     * @param a - the input terminal
+     * @return ACTION[s, a] if it is defined; or null if it isn't
+     */
+    public Action ACTION(Set<Item> s, Terminal a) {
+        var actionsOnState = ACTION.get(s);
+        if (actionsOnState == null) return null;
+        return actionsOnState.get(a);
     }
 
-    public Set<Item> GOTO(Set<Item> state, NonTerminal nt) {
-        if (GOTO.containsKey(state)) {
-            var gotoFromState = GOTO.get(state);
-            if (gotoFromState != null && gotoFromState.containsKey(nt)) {
-                return gotoFromState.get(nt);
-            }
-            throw new NoSuchElementException("Transition with that input symbol not found.");
-        }
-        throw new NoSuchElementException("Transitions from that state not found.");
+    /**
+     * Lookup GOTO[s, A]
+     *
+     * @param s - the state from which we want to transition
+     * @param A - the input non-terminal on the outgoing transition/edge
+     *
+     * @return GOTO[s, A] if it is defined; or null if it isn't
+     */
+    public ImmutableSet<Item> GOTO(Set<Item> s, NonTerminal A) {
+        var gotoFromState = GOTO.get(s);
+        if (gotoFromState == null) return null;
+        return gotoFromState.get(A);
     }
 
     /**

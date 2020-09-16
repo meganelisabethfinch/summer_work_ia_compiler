@@ -1,5 +1,7 @@
 package mef40;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class UFloat extends Token {
     public final float value;
 
@@ -20,5 +22,10 @@ public class UFloat extends Token {
         }
         UFloat ufloat = (UFloat)o;
         return this.value == ufloat.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(value).toHashCode();
     }
 }
