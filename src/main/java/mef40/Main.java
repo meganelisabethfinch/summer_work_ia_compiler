@@ -1,27 +1,28 @@
 package mef40;
 
 import mef40.lexer.Lexer;
-import mef40.parser.Production;
+import mef40.parser.Parser;
 
 import java.io.EOFException;
-import java.util.List;
+import java.util.Queue;
 
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
-        var lexer = new Lexer();
-
-        String s1 = "72.3 + 45.3";
-
-
+        if (args.length != 1) {
+            System.out.println("Please input one expression.");
+            return;
+        }
 
         try {
-            lexer.lex(s1);
-        } catch (EOFException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            String input = args[0];
+            Queue<Token> tokens = Lexer.lex(input);
+            System.out.println(tokens);
+            Node parseTree = Parser.parse(tokens);
+            System.out.println(parseTree);
+        } catch (EOFException | IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
+
 }

@@ -14,6 +14,8 @@ public class ParserTest {
     public void parser_parsesNumber() {
         // ARRANGE
         Queue<Token> tokens = new LinkedList<>(List.of(new UFloat(6)));
+
+        /*
         var expected = List.of(
                 Parser.grammar.get(14), // FLOAT -> UFLOAT
                 Parser.grammar.get(12), // STATEMENT -> FLOAT
@@ -24,9 +26,20 @@ public class ParserTest {
                 Parser.grammar.get(2) // EXPRESSION -> DIFFERENCE
         );
         // Does not include START -> EXPRESSION
+        */
+
+        var expected = new Node(NonTerminal.EXPR,
+                new Node(NonTerminal.DIFF,
+                new Node(NonTerminal.PROD,
+                new Node(NonTerminal.OPTCOS,
+                new Node(NonTerminal.OPTFACT,
+                new Node(NonTerminal.STATEMENT,
+                new Node(NonTerminal.FLOAT,
+                new Node(Terminal.UFLOAT))))))));
 
         // ACT
         var actual = Parser.parse(tokens);
+        System.out.println(actual);
 
         // ASSERT
         assertThat(actual).isEqualTo(expected);
@@ -45,7 +58,7 @@ public class ParserTest {
         Parser.parse(tokens);
 
         // ASSERT
-        // Passes as long as Parser.parse() throws no exceptions
+        // This one passes as long as no exceptions thrown
     }
 
     @Test
@@ -57,6 +70,8 @@ public class ParserTest {
                 new Token(Terminal.FACTORIAL)
         ));
 
+
+        /*
         var expected = List.of(
                 Parser.grammar.get(14), // FLOAT -> UFLOAT
                 Parser.grammar.get(12), // STATEMENT -> FLOAT
@@ -68,12 +83,27 @@ public class ParserTest {
                 Parser.grammar.get(4), // DIFFERENCE -> PRODUCT
                 Parser.grammar.get(2) // EXPRESSION -> DIFFERENCE
         );
+*/
+        var expected = new Node(NonTerminal.EXPR,
+                new Node(NonTerminal.DIFF,
+                        new Node(NonTerminal.PROD,
+                                new Node(NonTerminal.OPTCOS,
+                                        new Node(NonTerminal.OPTFACT,
+                                                new Node(NonTerminal.OPTFACT,
+                                                        new Node(NonTerminal.OPTFACT,
+                                                                new Node(NonTerminal.STATEMENT,
+                                                                        new Node(NonTerminal.FLOAT,
+                                                                                new Node(Terminal.UFLOAT)))),
+                                                        new Node(Terminal.FACTORIAL)),
+                                                new Node(Terminal.FACTORIAL))))));
 
         // ACT
         var actual = Parser.parse(tokens);
 
         // ASSERT
         assertThat(actual).isEqualTo(expected);
+
+
     }
 
     @Test(expected = IllegalArgumentException.class)

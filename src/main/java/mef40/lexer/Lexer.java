@@ -28,7 +28,6 @@ public class Lexer {
             queue.add(next);
         }
 
-        System.out.println(queue);
         return queue;
     }
 

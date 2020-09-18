@@ -1,14 +1,6 @@
 package mef40.parser;
 
-import com.google.common.collect.ImmutableSet;
-import mef40.NonTerminal;
-import mef40.Token;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Stack;
 
 public class Reduce implements Action {
     public final Production production;

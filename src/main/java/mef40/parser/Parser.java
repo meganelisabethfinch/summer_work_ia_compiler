@@ -2,11 +2,10 @@ package mef40.parser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import mef40.NonTerminal;
-import mef40.Terminal;
-import mef40.Token;
+import mef40.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Parser {
     // The grammar for my parser
@@ -37,19 +36,19 @@ public class Parser {
      *
      * @return list of 'reduction steps' (i.e. productions by which we reduce)
      */
-    public static List<Production> parse(Queue<Token> tokens) {
+    public static Node parse(Queue<Token> tokens) throws IllegalArgumentException {
         Queue<Token> w$ = new LinkedList<>(tokens);
         w$.add(new Token(Terminal.$));
 
         Stack<ImmutableSet<Item>> states = new Stack<>();
         states.add(table.initialState);
 
+        Stack<Node> nodes = new Stack<>();
         List<Production> out = new ArrayList();
 
         var a = w$.poll().tag;
         while (true) {
             var s = states.peek();
-
             var action = table.ACTION(s, a);
 
             if (action == null) {
@@ -58,21 +57,30 @@ public class Parser {
                 var state = ((Shift) action).state;
 
                 states.push(state);
+                nodes.push(new Node(a));
+
                 a = w$.poll().tag;
             } else if (action.getClass().equals(Reduce.class)) {
                 var production = ((Reduce) action).production;
 
+                List<Node> children = new ArrayList<>();
+
                 for (int i = 0; i < production.size(); i++) {
                     states.pop();
+                    children.add(nodes.pop());
                 }
 
+                Collections.reverse(children);
+
                 states.push(table.GOTO(states.peek(), production.head));
-                out.add(production);
+                nodes.push(new Node(production.head, children));
+
+                // out.add(production);
             } else if (action.getClass().equals(Accept.class)) {
                 break;
             }
         }
 
-        return out;
+        return nodes.pop();
     }
 }
