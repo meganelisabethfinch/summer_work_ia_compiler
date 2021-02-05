@@ -2,8 +2,8 @@ package mef40.parser;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import mef40.NonTerminal;
-import mef40.Symbol;
+import mef40.grammar.NonTerminal;
+import mef40.grammar.Symbol;
 
 import java.util.List;
 import java.util.stream.Collectors;

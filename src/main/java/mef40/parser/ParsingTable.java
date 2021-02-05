@@ -1,9 +1,9 @@
 package mef40.parser;
 
 import com.google.common.collect.ImmutableSet;
-import mef40.NonTerminal;
-import mef40.Symbol;
-import mef40.Terminal;
+import mef40.grammar.NonTerminal;
+import mef40.grammar.Symbol;
+import mef40.grammar.Terminal;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -240,7 +240,7 @@ public class ParsingTable {
         boolean updated;
 
         do {
-            // As we only ever add terminals to firsts,
+            // As we only add terminals to firsts, and never remove them,
             // we can compare the size before and after each iteration to know when to terminate
             long sizeCurr = firsts.entrySet().stream()
                     .mapToLong(entry -> entry.getValue().size())

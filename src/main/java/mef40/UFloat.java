@@ -1,5 +1,6 @@
 package mef40;
 
+import mef40.grammar.Terminal;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class UFloat extends Token {

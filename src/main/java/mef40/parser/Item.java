@@ -1,6 +1,5 @@
 package mef40.parser;
 
-import mef40.Symbol;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;

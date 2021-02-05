@@ -48,3 +48,16 @@ The production rules of my grammar are
     optfact    ::= optfact ! | statement
     statement  ::= (expression) | float
    
+The lexer converts the input into a queue of tokens (terminals). The parser emits a parse tree in the form `X(Y)(Z)` where nodes `Y` and `Z` are the children of node `X`.
+
+## Usage
+
+    Usage: <expression>
+    
+For example, for the expression `2*3+4`, the token stream produced by the lexer is
+
+    [<UFLOAT, 2.0>, <MULT>, <UFLOAT, 3.0>, <PLUS>, <UFLOAT, 4.0>]
+
+and the parse tree emitted by the parser is
+
+    EXPR(EXPR(DIFF(PROD(OPTCOS(OPTFACT(STATEMENT(FLOAT(UFLOAT)))))(MULT)(PROD(OPTCOS(OPTFACT(STATEMENT(FLOAT(UFLOAT)))))))))(PLUS)(DIFF(PROD(OPTCOS(OPTFACT(STATEMENT(FLOAT(UFLOAT)))))))

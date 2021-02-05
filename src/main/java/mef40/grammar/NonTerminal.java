@@ -1,4 +1,6 @@
-package mef40;
+package mef40.grammar;
+
+import mef40.grammar.Symbol;
 
 public enum NonTerminal implements Symbol {
     START,

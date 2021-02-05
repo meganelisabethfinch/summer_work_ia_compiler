@@ -2,6 +2,7 @@ package mef40;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import mef40.grammar.Terminal;
 import mef40.lexer.Lexer;
 import org.junit.Test;
 

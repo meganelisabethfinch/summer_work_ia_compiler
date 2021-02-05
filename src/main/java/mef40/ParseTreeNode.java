@@ -1,20 +1,21 @@
 package mef40;
 
+import mef40.grammar.Symbol;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Collections;
 import java.util.List;
 
-public class Node {
+public class ParseTreeNode {
     private final Symbol symbol;
-    private final List<Node> children;
+    private final List<ParseTreeNode> children;
 
-    public Node(Symbol symbol, List<Node> children) {
+    public ParseTreeNode(Symbol symbol, List<ParseTreeNode> children) {
         this.symbol = symbol;
         this.children = children == null ? Collections.emptyList() : children;
     }
 
-    public Node(Symbol symbol, Node ...children) {
+    public ParseTreeNode(Symbol symbol, ParseTreeNode...children) {
         this.symbol = symbol;
         this.children = List.of(children);
     }
@@ -23,7 +24,7 @@ public class Node {
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (o == null || o.getClass() != this.getClass()) { return false; }
-        Node node = (Node)o;
+        ParseTreeNode node = (ParseTreeNode)o;
         return this.symbol.equals(node.symbol) && this.children.equals(node.children);
     }
 
@@ -36,7 +37,7 @@ public class Node {
     public String toString() {
         String str = symbol.toString();
 
-        for (Node node : children) {
+        for (ParseTreeNode node : children) {
             str = str + "(" + node.toString() + ")";
         }
 

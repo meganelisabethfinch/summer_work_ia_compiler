@@ -3,9 +3,10 @@ package mef40.parser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import mef40.*;
+import mef40.grammar.NonTerminal;
+import mef40.grammar.Terminal;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Parser {
     // The grammar for my parser
@@ -34,17 +35,17 @@ public class Parser {
      *
      * @param tokens - input string w
      *
-     * @return list of 'reduction steps' (i.e. productions by which we reduce)
+     * @return a parse tree
      */
-    public static Node parse(Queue<Token> tokens) throws IllegalArgumentException {
+    public static ParseTreeNode parse(Queue<Token> tokens) throws IllegalArgumentException {
         Queue<Token> w$ = new LinkedList<>(tokens);
         w$.add(new Token(Terminal.$));
 
         Stack<ImmutableSet<Item>> states = new Stack<>();
         states.add(table.initialState);
 
-        Stack<Node> nodes = new Stack<>();
-        List<Production> out = new ArrayList();
+        Stack<ParseTreeNode> nodes = new Stack<>();
+        // List<Production> reductionSteps = new ArrayList();
 
         var a = w$.poll().tag;
         while (true) {
@@ -57,13 +58,13 @@ public class Parser {
                 var state = ((Shift) action).state;
 
                 states.push(state);
-                nodes.push(new Node(a));
+                nodes.push(new ParseTreeNode(a));
 
                 a = w$.poll().tag;
             } else if (action.getClass().equals(Reduce.class)) {
                 var production = ((Reduce) action).production;
 
-                List<Node> children = new ArrayList<>();
+                List<ParseTreeNode> children = new ArrayList<>();
 
                 for (int i = 0; i < production.size(); i++) {
                     states.pop();
@@ -73,9 +74,9 @@ public class Parser {
                 Collections.reverse(children);
 
                 states.push(table.GOTO(states.peek(), production.head));
-                nodes.push(new Node(production.head, children));
+                nodes.push(new ParseTreeNode(production.head, children));
 
-                // out.add(production);
+                // reductionSteps.add(production);
             } else if (action.getClass().equals(Accept.class)) {
                 break;
             }

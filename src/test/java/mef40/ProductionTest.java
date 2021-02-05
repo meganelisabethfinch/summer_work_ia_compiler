@@ -3,6 +3,8 @@ package mef40;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import mef40.grammar.NonTerminal;
+import mef40.grammar.Terminal;
 import mef40.parser.Production;
 import org.junit.Test;
 

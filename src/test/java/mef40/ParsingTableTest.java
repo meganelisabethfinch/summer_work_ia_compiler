@@ -2,6 +2,8 @@ package mef40;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import mef40.grammar.NonTerminal;
+import mef40.grammar.Terminal;
 import mef40.parser.*;
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public class ParsingTableTest {
     @Test
     public void generateClosure_forSimpleGrammar() {
         // ARRANGE
-        // E' -> E, E -> E + P | P, P -> P * S | S, S -> (E) | num (similar to example 4.40 of book)
+        // E' -> E, E -> E + P | P, P -> P * S | S, S -> (E) | num
         var items = Set.of(new Item(simpleGrammar.get(0), 0));
 
         // E' -> . E, E -> . E + P, E -> . P, P -> . P * S, P -> . S, S -> . ( E ), S -> . num
@@ -127,7 +129,7 @@ public class ParsingTableTest {
     @Test
     public void constructSLRParsingTable_forSimpleGrammar() {
         // ARRANGE
-        // Generate some states from their kernels as on p244
+        // Generate some states from their kernels
         var I0 = ParsingTable.generateClosure(Set.of(new Item(simpleGrammar.get(0), 0)), simpleGrammar);
         var I2 = Set.of(new Item(simpleGrammar.get(2), 1), new Item(simpleGrammar.get(3), 1));
         var I5 = Set.of(new Item(simpleGrammar.get(6), 1));

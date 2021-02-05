@@ -17,8 +17,15 @@ public class Main {
         try {
             String input = args[0];
             Queue<Token> tokens = Lexer.lex(input);
+
+            // output lexer result
+            System.out.println("Token stream produced by lexer:");
             System.out.println(tokens);
-            Node parseTree = Parser.parse(tokens);
+
+            ParseTreeNode parseTree = Parser.parse(tokens);
+
+            // output parser result
+            System.out.println("Parse tree produced by parser:");
             System.out.println(parseTree);
         } catch (EOFException | IllegalArgumentException e) {
             System.out.println(e.getMessage());

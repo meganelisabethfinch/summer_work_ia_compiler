@@ -1,5 +1,7 @@
 package mef40;
 
+import mef40.grammar.NonTerminal;
+import mef40.grammar.Terminal;
 import mef40.parser.Parser;
 import org.junit.Test;
 
@@ -15,27 +17,14 @@ public class ParserTest {
         // ARRANGE
         Queue<Token> tokens = new LinkedList<>(List.of(new UFloat(6)));
 
-        /*
-        var expected = List.of(
-                Parser.grammar.get(14), // FLOAT -> UFLOAT
-                Parser.grammar.get(12), // STATEMENT -> FLOAT
-                Parser.grammar.get(10), // OPTFACT -> STATEMENT
-                Parser.grammar.get(8), // OPTCOS -> OPTFACT
-                Parser.grammar.get(6), // PRODUCT -> OPTCOS
-                Parser.grammar.get(4), // DIFFERENCE -> PRODUCT
-                Parser.grammar.get(2) // EXPRESSION -> DIFFERENCE
-        );
-        // Does not include START -> EXPRESSION
-        */
-
-        var expected = new Node(NonTerminal.EXPR,
-                new Node(NonTerminal.DIFF,
-                new Node(NonTerminal.PROD,
-                new Node(NonTerminal.OPTCOS,
-                new Node(NonTerminal.OPTFACT,
-                new Node(NonTerminal.STATEMENT,
-                new Node(NonTerminal.FLOAT,
-                new Node(Terminal.UFLOAT))))))));
+        var expected = new ParseTreeNode(NonTerminal.EXPR,
+                new ParseTreeNode(NonTerminal.DIFF,
+                new ParseTreeNode(NonTerminal.PROD,
+                new ParseTreeNode(NonTerminal.OPTCOS,
+                new ParseTreeNode(NonTerminal.OPTFACT,
+                new ParseTreeNode(NonTerminal.STATEMENT,
+                new ParseTreeNode(NonTerminal.FLOAT,
+                new ParseTreeNode(Terminal.UFLOAT))))))));
 
         // ACT
         var actual = Parser.parse(tokens);
@@ -58,7 +47,7 @@ public class ParserTest {
         Parser.parse(tokens);
 
         // ASSERT
-        // This one passes as long as no exceptions thrown
+        // Accepted as long as no exceptions thrown
     }
 
     @Test
@@ -72,7 +61,7 @@ public class ParserTest {
 
 
         /*
-        var expected = List.of(
+        var expectedReductions = List.of(
                 Parser.grammar.get(14), // FLOAT -> UFLOAT
                 Parser.grammar.get(12), // STATEMENT -> FLOAT
                 Parser.grammar.get(10), // OPTFACT -> STATEMENT
@@ -84,18 +73,18 @@ public class ParserTest {
                 Parser.grammar.get(2) // EXPRESSION -> DIFFERENCE
         );
 */
-        var expected = new Node(NonTerminal.EXPR,
-                new Node(NonTerminal.DIFF,
-                        new Node(NonTerminal.PROD,
-                                new Node(NonTerminal.OPTCOS,
-                                        new Node(NonTerminal.OPTFACT,
-                                                new Node(NonTerminal.OPTFACT,
-                                                        new Node(NonTerminal.OPTFACT,
-                                                                new Node(NonTerminal.STATEMENT,
-                                                                        new Node(NonTerminal.FLOAT,
-                                                                                new Node(Terminal.UFLOAT)))),
-                                                        new Node(Terminal.FACTORIAL)),
-                                                new Node(Terminal.FACTORIAL))))));
+        var expected = new ParseTreeNode(NonTerminal.EXPR,
+                new ParseTreeNode(NonTerminal.DIFF,
+                        new ParseTreeNode(NonTerminal.PROD,
+                                new ParseTreeNode(NonTerminal.OPTCOS,
+                                        new ParseTreeNode(NonTerminal.OPTFACT,
+                                                new ParseTreeNode(NonTerminal.OPTFACT,
+                                                        new ParseTreeNode(NonTerminal.OPTFACT,
+                                                                new ParseTreeNode(NonTerminal.STATEMENT,
+                                                                        new ParseTreeNode(NonTerminal.FLOAT,
+                                                                                new ParseTreeNode(Terminal.UFLOAT)))),
+                                                        new ParseTreeNode(Terminal.FACTORIAL)),
+                                                new ParseTreeNode(Terminal.FACTORIAL))))));
 
         // ACT
         var actual = Parser.parse(tokens);

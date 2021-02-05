@@ -1,4 +1,4 @@
-package mef40;
+package mef40.grammar;
 
 public interface Symbol {
 }

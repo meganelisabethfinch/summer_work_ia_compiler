@@ -1,6 +1,6 @@
 package mef40.lexer;
 
-import mef40.Terminal;
+import mef40.grammar.Terminal;
 import mef40.Token;
 import mef40.UFloat;
 
@@ -20,7 +20,13 @@ public class Lexer {
             entry(')', Terminal.CLOSE)
     );
 
-    public static Queue<Token> lex(String input) throws EOFException {
+    /**
+     *
+     * @param input string
+     * @return queue of tokens for the input string
+     * @throws EOFException --
+     */
+    public static Queue<Token> lex(String input) throws EOFException, IllegalArgumentException {
         var queue = new LinkedList<Token>();
         var reader = new LexerReader(input.replaceAll("\\s+", ""));
         while (reader.peek() != '$') {
@@ -31,7 +37,14 @@ public class Lexer {
         return queue;
     }
 
-    private static Token getToken(LexerReader reader) throws EOFException {
+    /**
+     * State machine to identify the next token in the input string
+     * @param reader
+     * @return the next token in the input string
+     * @throws EOFException -- if file ends before expected e.g. co or 1.4e+
+     * @throws IllegalArgumentException -- if unexpected input occurs e.g. co2
+     */
+    private static Token getToken(LexerReader reader) throws EOFException, IllegalArgumentException {
         int state = 1;
         char c = '$';
 
